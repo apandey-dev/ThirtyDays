@@ -3,8 +3,9 @@ package com.minimal.thirtydays.ui.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -37,13 +38,16 @@ import com.minimal.thirtydays.ui.theme.MaliFontFamily
 import com.minimal.thirtydays.ui.theme.PlaypenFontFamily
 
 /**
- * Minimalist, compact DayCard designed with precise typography,
- * non-circular sleek rounded geometry, and responsive layout.
+ * Minimalist, compact DayCard:
+ * - Single click: opens the day's detail view.
+ * - Long click: opens the hidden JSON Config / Week Goal Manager.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DayCard(
     item: DayItem,
     onClick: (DayItem) -> Unit,
+    onLongClick: (DayItem) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val extendedColors = LocalExtendedColors.current
@@ -68,12 +72,16 @@ fun DayCard(
     Surface(
         modifier = modifier
             .scale(scale)
-            .clickable(
+            .combinedClickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     onClick(item)
+                },
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onLongClick(item)
                 }
             ),
         shape = DayCardShape,
